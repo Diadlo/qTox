@@ -5,7 +5,7 @@
 #include "src/persistence/profile.h"
 #include "src/persistence/ifriendsettings.h"
 
-AboutFriend::AboutFriend(const Friend* f, IFriendSettings* const s)
+AboutFriend::AboutFriend(Friend* const f, IFriendSettings* const s)
     : f{f}
     , settings{s}
 {
@@ -37,6 +37,11 @@ QString AboutFriend::getStatusMessage() const
 ToxPk AboutFriend::getPublicKey() const
 {
     return f->getPublicKey();
+}
+
+Friend* AboutFriend::getFriend() const
+{
+    return f;
 }
 
 QPixmap AboutFriend::getAvatar() const
@@ -106,6 +111,17 @@ bool AboutFriend::clearHistory()
     if (history) {
         history->removeFriendHistory(pk.toString());
         return true;
+    }
+
+    return false;
+}
+
+bool AboutFriend::isHistoryExistence()
+{
+    History* const history = Nexus::getProfile()->getHistory();
+    if (history) {
+        const ToxPk pk = f->getPublicKey();
+        return history->isHistoryExistence(pk.toString());
     }
 
     return false;

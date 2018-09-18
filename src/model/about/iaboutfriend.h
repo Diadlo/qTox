@@ -2,6 +2,7 @@
 #define I_ABOUT_FRIEND_H
 
 #include "src/model/interface.h"
+#include "src/model/friend.h"
 #include "src/persistence/ifriendsettings.h"
 #include <QObject>
 
@@ -10,6 +11,8 @@ class IAboutFriend : public QObject
     Q_OBJECT
 
 public:
+    virtual Friend* getFriend() const = 0;
+
     virtual QString getName() const = 0;
     virtual QString getStatusMessage() const = 0;
     virtual ToxPk getPublicKey() const = 0;
@@ -29,8 +32,11 @@ public:
     virtual void setAutoGroupInvite(bool enabled) = 0;
 
     virtual bool clearHistory() = 0;
+    virtual bool isHistoryExistence() = 0;
 
     /* signals */
+    DECLARE_SIGNAL(historyCleared, const QString&);
+
     DECLARE_SIGNAL(nameChanged, const QString&);
     DECLARE_SIGNAL(statusChanged, const QString&);
     DECLARE_SIGNAL(publicKeyChanged, const QString&);
