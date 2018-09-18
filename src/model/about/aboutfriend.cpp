@@ -39,7 +39,7 @@ ToxPk AboutFriend::getPublicKey() const
     return f->getPublicKey();
 }
 
-Friend* AboutFriend::getFriend() const
+const Friend* AboutFriend::getFriend() const
 {
     return f;
 }

@@ -11,7 +11,7 @@ class IAboutFriend : public QObject
     Q_OBJECT
 
 public:
-    virtual Friend* getFriend() const = 0;
+    virtual const Friend* getFriend() const = 0;
 
     virtual QString getName() const = 0;
     virtual QString getStatusMessage() const = 0;

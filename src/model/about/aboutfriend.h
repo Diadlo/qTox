@@ -17,7 +17,7 @@ class AboutFriend : public IAboutFriend
 public:
     AboutFriend(Friend* const f, IFriendSettings* const settings);
 
-    Friend* getFriend() const override;
+    const Friend* getFriend() const override;
 
     QString getName() const override;
     QString getStatusMessage() const override;
@@ -54,7 +54,7 @@ public:
     SIGNAL_IMPL(AboutFriend, autoGroupInviteChanged, bool)
 
 private:
-    Friend* const f;
+    const Friend* const f;
     IFriendSettings* const settings;
 };
 
