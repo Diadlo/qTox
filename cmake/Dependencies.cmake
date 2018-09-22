@@ -5,6 +5,7 @@
 ################################################################################
 
 # This should go into subdirectories later.
+find_package(PkgConfig)
 find_package(Qt5Concurrent    REQUIRED)
 find_package(Qt5Core          REQUIRED)
 find_package(Qt5Gui           REQUIRED)
@@ -163,7 +164,7 @@ endif()
 
 search_dependency(OPENAL              LIBRARY openal OpenAL32 HEADER al.h HEADER_SUFFIXES AL)
 
-# Link only 
+# Link only
 search_dependency(OPUS LIBRARY opus)
 if (MSVC)
   search_dependency(PTHREAD LIBRARY pthreadVC2)
