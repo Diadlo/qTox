@@ -539,10 +539,12 @@ void Settings::loadPersonal(QString profileName, const ToxEncrypt* passKey)
         friendRequests.reserve(size);
         for (int i = 0; i < size; i++) {
             ps.setArrayIndex(i);
-            Request request;
-            request.address = ps.value("addr").toString();
-            request.message = ps.value("message").toString();
-            request.read = ps.value("read").toBool();
+            const QString addr = ps.value("addr").toString();
+            FriendRequest request = {
+                QByteArray::fromHex(addr.toLatin1()),
+                ps.value("message").toString(),
+                ps.value("read").toBool(),
+            };
             friendRequests.push_back(request);
         }
         ps.endArray();
@@ -805,7 +807,7 @@ void Settings::savePersonal(QString profileName, const ToxEncrypt* passkey)
         int index = 0;
         for (auto& request : friendRequests) {
             ps.setArrayIndex(index);
-            ps.setValue("addr", request.address);
+            ps.setValue("addr", QString(request.address.toHex()));
             ps.setValue("message", request.message);
             ps.setValue("read", request.read);
 
@@ -2432,19 +2434,21 @@ void Settings::setCircleExpanded(int id, bool expanded)
 bool Settings::addFriendRequest(const QString& friendAddress, const QString& message)
 {
     QMutexLocker locker{&bigLock};
+    ToxPk pk(QByteArray::fromHex(friendAddress.toLatin1()));
 
-    for (auto queued : friendRequests) {
-        if (queued.address == friendAddress) {
+    for (auto& queued : friendRequests) {
+        if (queued.address == pk) {
             queued.message = message;
             queued.read = false;
             return false;
         }
     }
 
-    Request request;
-    request.address = friendAddress;
-    request.message = message;
-    request.read = false;
+    const FriendRequest request = {
+        pk,
+        message,
+        false
+    };
 
     friendRequests.push_back(request);
     return true;
@@ -2454,14 +2458,16 @@ unsigned int Settings::getUnreadFriendRequests() const
 {
     QMutexLocker locker{&bigLock};
     unsigned int unreadFriendRequests = 0;
-    for (auto request : friendRequests)
-        if (!request.read)
+    for (const auto& request : friendRequests) {
+        if (!request.read) {
             ++unreadFriendRequests;
+        }
+    }
 
     return unreadFriendRequests;
 }
 
-Settings::Request Settings::getFriendRequest(int index) const
+const FriendRequest& Settings::getFriendRequest(int index) const
 {
     QMutexLocker locker{&bigLock};
     return friendRequests.at(index);

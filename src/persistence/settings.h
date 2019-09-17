@@ -25,6 +25,7 @@
 #include "src/core/icoresettings.h"
 #include "src/core/toxencrypt.h"
 #include "src/core/toxfile.h"
+#include "src/model/friendrequest.h"
 #include "src/persistence/ifriendsettings.h"
 #include "src/persistence/igroupsettings.h"
 #include "src/video/ivideosettings.h"
@@ -159,13 +160,6 @@ public:
     void loadPersonal(QString profileName, const ToxEncrypt* passKey);
 
     void resetToDefault();
-
-    struct Request
-    {
-        QString address;
-        QString message;
-        bool read;
-    };
 
 public slots:
     void saveGlobal();
@@ -560,7 +554,7 @@ public:
 
     bool addFriendRequest(const QString& friendAddress, const QString& message);
     unsigned int getUnreadFriendRequests() const;
-    Request getFriendRequest(int index) const;
+    const FriendRequest& getFriendRequest(int index) const;
     int getFriendRequestSize() const;
     void clearUnreadFriendRequests();
     void removeFriendRequest(int index);
@@ -658,7 +652,7 @@ private:
     QString globalAutoAcceptDir;
     size_t autoAcceptMaxSize;
 
-    QList<Request> friendRequests;
+    QList<FriendRequest> friendRequests;
 
     // GUI
     QString smileyPack;

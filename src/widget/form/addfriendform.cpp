@@ -124,8 +124,8 @@ AddFriendForm::AddFriendForm()
 
     const int size = Settings::getInstance().getFriendRequestSize();
     for (int i = 0; i < size; ++i) {
-        Settings::Request request = Settings::getInstance().getFriendRequest(i);
-        addFriendRequestWidget(request.address, request.message);
+        const auto& request = Settings::getInstance().getFriendRequest(i);
+        addFriendRequestWidget(request);
     }
 }
 
@@ -394,38 +394,61 @@ void AddFriendForm::retranslateUi()
     }
 }
 
-void AddFriendForm::addFriendRequestWidget(const QString& friendAddress, const QString& message)
+class FriendRequestWidget : public QWidget
 {
-    QWidget* friendWidget = new QWidget(tabWidget);
-    QHBoxLayout* friendLayout = new QHBoxLayout(friendWidget);
-    QVBoxLayout* horLayout = new QVBoxLayout();
-    horLayout->setMargin(0);
-    friendLayout->addLayout(horLayout);
+    Q_OBJECT
 
-    CroppingLabel* friendLabel = new CroppingLabel(friendWidget);
-    friendLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    friendLabel->setText("<b>" + friendAddress + "</b>");
-    horLayout->addWidget(friendLabel);
+private:
+    FriendRequest& request;
 
-    QLabel* messageLabel = new QLabel(message);
-    // allow to select text, but treat links as plaintext to prevent phishing
-    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    messageLabel->setTextFormat(Qt::PlainText);
-    messageLabel->setWordWrap(true);
-    horLayout->addWidget(messageLabel, 1);
+public:
+    FriendRequestWidget(FriendRequest& request, QObject* parent = nullptr)
+        : QWidget(parent)
+        , m_request(request)
+    {
+        const QString& friendAddress = request.address.toString();
+        const QString& message = request.message;
 
-    QPushButton* acceptButton = new QPushButton(friendWidget);
-    acceptButtons.append(acceptButton);
-    connect(acceptButton, &QPushButton::released, this, &AddFriendForm::onFriendRequestAccepted);
-    friendLayout->addWidget(acceptButton);
-    retranslateAcceptButton(acceptButton);
+        QHBoxLayout* friendLayout = new QHBoxLayout(this);
+        QVBoxLayout* horLayout = new QVBoxLayout();
+        horLayout->setMargin(0);
+        friendLayout->addLayout(horLayout);
 
-    QPushButton* rejectButton = new QPushButton(friendWidget);
-    rejectButtons.append(rejectButton);
-    connect(rejectButton, &QPushButton::released, this, &AddFriendForm::onFriendRequestRejected);
-    friendLayout->addWidget(rejectButton);
-    retranslateRejectButton(rejectButton);
+        CroppingLabel* friendLabel = new CroppingLabel(this);
+        friendLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+        friendLabel->setText("<b>" + friendAddress + "</b>");
+        horLayout->addWidget(friendLabel);
 
+        QLabel* messageLabel = new QLabel(message);
+        // allow to select text, but treat links as plaintext to prevent phishing
+        messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+        messageLabel->setTextFormat(Qt::PlainText);
+        messageLabel->setWordWrap(true);
+        horLayout->addWidget(messageLabel, 1);
+
+        QPushButton* acceptButton = new QPushButton(this);
+        acceptButtons.append(acceptButton);
+        connect(acceptButton, &QPushButton::released, this, &AddFriendForm::onFriendRequestAccepted);
+        friendLayout->addWidget(acceptButton);
+        retranslateAcceptButton(acceptButton);
+
+        QPushButton* rejectButton = new QPushButton(this);
+        rejectButtons.append(rejectButton);
+        connect(rejectButton, &QPushButton::released, this, &AddFriendForm::onFriendRequestRejected);
+        friendLayout->addWidget(rejectButton);
+        retranslateRejectButton(rejectButton);
+    }
+
+    void retranslateUi()
+    {
+        acceptButton->setText(tr("Accept"));
+        rejectButton->setText(tr("Reject"));
+    }
+};
+
+void AddFriendForm::addFriendRequestWidget(const FriendRequest& request)
+{
+    QWidget* friendWidget = new FriendRequestWidget(request, tabWidget);
     requestsLayout->insertWidget(0, friendWidget);
 }
 
