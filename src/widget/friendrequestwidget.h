@@ -17,29 +17,24 @@
     along with qTox.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FRIEND_REQUESTS_H
-#define FRIEND_REQUESTS_H
+#ifndef FRIEND_REQUEST_WIDGET
+#define FRIEND_REQUEST_WIDGET
 
-#include <QObject>
-#include "src/model/friendrequest.h"
+#include "friendfequest.h"
+#include <QPushButton>
 
-class FirendRequests : public QObject
+class FriendRequestWidget : public QWidget
 {
     Q_OBJECT
+
 public:
-    const QList<FriendRequest>& getRequests() const;
-    void accept(const FriendRequest& request);
-    void reject(const FriendRequest& request);
-
-    void markAllAsRead();
-
-signals:
-    void requestAdded(const FriendRequest& request);
-    void requestAccepted(const FriendRequest& request);
-    void requestRejected(const FriendRequest& request);
+    FriendRequestWidget(FriendRequest& request, QObject* parent = nullptr);
+    void retranslateUi();
 
 private:
-    QList<FriendRequest> requests;
+    QPushButton* acceptButton;
+    QPushButton* rejectButton;
+    FriendRequest& m_request;
 };
 
-#endif // FRIEND_REQUESTS_H
+#endif // FRIEND_REQUEST_WIDGET

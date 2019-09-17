@@ -21,6 +21,7 @@
 #define ADDFRIENDFORM_H
 
 #include "src/core/toxid.h"
+#include "src/widget/friendrequestwidget.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -112,6 +113,7 @@ private:
     QList<QPushButton*> acceptButtons;
     QList<QPushButton*> rejectButtons;
     QList<QString> contactsToImport;
+    QList<FriendRequestWidget*> requestWidgets;
 };
 
 #endif // ADDFRIENDFORM_H

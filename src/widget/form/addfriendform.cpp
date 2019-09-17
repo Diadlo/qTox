@@ -394,58 +394,6 @@ void AddFriendForm::retranslateUi()
     }
 }
 
-class FriendRequestWidget : public QWidget
-{
-    Q_OBJECT
-
-private:
-    FriendRequest& request;
-
-public:
-    FriendRequestWidget(FriendRequest& request, QObject* parent = nullptr)
-        : QWidget(parent)
-        , m_request(request)
-    {
-        const QString& friendAddress = request.address.toString();
-        const QString& message = request.message;
-
-        QHBoxLayout* friendLayout = new QHBoxLayout(this);
-        QVBoxLayout* horLayout = new QVBoxLayout();
-        horLayout->setMargin(0);
-        friendLayout->addLayout(horLayout);
-
-        CroppingLabel* friendLabel = new CroppingLabel(this);
-        friendLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        friendLabel->setText("<b>" + friendAddress + "</b>");
-        horLayout->addWidget(friendLabel);
-
-        QLabel* messageLabel = new QLabel(message);
-        // allow to select text, but treat links as plaintext to prevent phishing
-        messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-        messageLabel->setTextFormat(Qt::PlainText);
-        messageLabel->setWordWrap(true);
-        horLayout->addWidget(messageLabel, 1);
-
-        QPushButton* acceptButton = new QPushButton(this);
-        acceptButtons.append(acceptButton);
-        connect(acceptButton, &QPushButton::released, this, &AddFriendForm::onFriendRequestAccepted);
-        friendLayout->addWidget(acceptButton);
-        retranslateAcceptButton(acceptButton);
-
-        QPushButton* rejectButton = new QPushButton(this);
-        rejectButtons.append(rejectButton);
-        connect(rejectButton, &QPushButton::released, this, &AddFriendForm::onFriendRequestRejected);
-        friendLayout->addWidget(rejectButton);
-        retranslateRejectButton(rejectButton);
-    }
-
-    void retranslateUi()
-    {
-        acceptButton->setText(tr("Accept"));
-        rejectButton->setText(tr("Reject"));
-    }
-};
-
 void AddFriendForm::addFriendRequestWidget(const FriendRequest& request)
 {
     QWidget* friendWidget = new FriendRequestWidget(request, tabWidget);

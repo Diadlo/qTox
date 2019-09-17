@@ -17,36 +17,32 @@
     along with qTox.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FRIEND_REQUEST_H
-#define FRIEND_REQUEST_H
+#ifndef FRIEND_REQUESTS_H
+#define FRIEND_REQUESTS_H
 
-#include "src/core/toxid.h"
-#include <QString>
+#include <QObject>
+#include "friendrequest.h"
 
-class FriendRequest : public QObject
+class FirendRequests : public QObject
 {
     Q_OBJECT
 public:
-    FriendRequest(const ToxPk& friendPk, const QString& message, bool read)
+    void addFriendRequest(const FriendRequest& request);
 
-    const ToxPk& getFriendPk() const;
-    const QString& getMessage() const;
+    const QList<FriendRequest>& getRequests() const;
+    void accept(const FriendRequest& request);
+    void reject(const FriendRequest& request);
 
-    bool isRead() const;
-    void markAsRead();
+    void markAllAsRead();
 
-    void accept();
-    void reject();
-
-signal:
-    void read();
-    void accepted();
-    void rejected();
+signals:
+    void requestAdded(const FriendRequest& request);
+    void requestAccepted(const FriendRequest& request);
+    void requestRejected(const FriendRequest& request);
+    void requestChanged(const FriendRequest& request);
 
 private:
-    ToxPk friendPk;
-    QString message;
-    bool read;
+    QList<FriendRequest> requests;
 };
 
-#endif // FRIEND_REQUEST_H
+#endif // FRIEND_REQUESTS_H
